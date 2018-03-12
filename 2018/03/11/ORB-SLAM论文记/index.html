@@ -377,9 +377,9 @@
 <ol>
 <li><p>分别在当前帧和参考帧中找二者的correspondence</p>
 </li>
-<li><p>并行计算两个模型：<br> $$X_c=H_cr<em>x_r$$<br> $$X^T_c</em>F_cr*x_r=0$$<br>前者使用归一化的DLT（直接线性法）计算单应性矩阵（$H_cr$），后者使用经典的八点法计算基础矩阵（$F_cr$），在每一步的迭代计算时，为每个模型计算score：<br> $$S<em>M=\sum</em>{i=1}^{n}{X_i}(\rho_M(d^2_cr(x^i_c,x^i_r,M))+\rho_M(d^2_rc(x^i_c,x^i_r,M)))))$$</p>
+<li><p>并行计算两个模型：<br> $$X_c=H_cr<em>x_r$$<br> $$X^T_c</em>F_cr*x_r=0$$<br>前者使用归一化的DLT（直接线性法）计算单应性矩阵（$H_cr$），后者使用经典的八点法计算基础矩阵（$F_cr$），在每一步的迭代计算时，为每个模型计算score：<br> $$S_M=\sum_{i=1}^{n}{X_i}(\rho_M(d^2_cr(x^i_c,x^i_r,M))+\rho_M(d^2_rc(x^i_c,x^i_r,M)))))$$</p>
 </li>
-<li><p>模型选择:<br>在平面运动和非平面运动两种情况下应选择相应的模型，这里使用一种鲁棒的方法来权衡：<br> $$R_H=\frac{S_H}{S_H+S_F}$$<br> $$S<em>M=\sum</em>{i=1}^{n}{X_i}(\rho_M(d^2_cr(x^i_c,x^i_r,M))+\rho_M(d^2_rc(x^i_c,x^i_r,M)))))$$<br>当$R_H$ &gt; 0.45就单应性矩阵模型，反之选择基础矩阵模型</p>
+<li><p>模型选择:<br>在平面运动和非平面运动两种情况下应选择相应的模型，这里使用一种鲁棒的方法来权衡：<br> $$R_H=\frac{S_H}{S_H+S_F}$$<br> $$S_M=\sum_{i=1}^{n}{X_i}(\rho_M(d^2_cr(x^i_c,x^i_r,M))+\rho_M(d^2_rc(x^i_c,x^i_r,M)))))$$<br>当$R_H$ &gt; 0.45就单应性矩阵模型，反之选择基础矩阵模型</p>
 </li>
 <li><p>运动与结构恢复<br>利用单应性矩阵或基础矩阵计算地图点（map points)</p>
 </li>
