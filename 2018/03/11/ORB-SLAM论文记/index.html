@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://yoursite.com/2018/03/11/ORB-SLAM论文记/index.html">
 <meta property="og:site_name" content="h&#39;s blog">
 <meta property="og:description" content="ORB-SLAM论文概要">
-<meta property="og:updated_time" content="2018-03-11T15:21:28.865Z">
+<meta property="og:updated_time" content="2018-03-12T02:07:53.812Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ORB-SLAM论文记">
 <meta name="twitter:description" content="ORB-SLAM论文概要">
@@ -374,21 +374,22 @@
 - 自动化系统初始化（attack PTAM）；
 - “适者生存”的关键帧和地图点筛选机制；
 </code></pre><h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><h3 id="自动化地图初始化"><a href="#自动化地图初始化" class="headerlink" title="自动化地图初始化"></a>自动化地图初始化</h3><p>由于单目的固有局限，不能直接根据图像获取深度，所以在单目SLAM在开始前都需进行地图初始化，初始化的目的是使用计算最初的几帧以计算初始的地图点。为了更好的鲁棒性，这里同时使用过两个独立的几何模型同时初始化：基于平面场景的单应性矩阵模型（homography matrix）和基于非平面场景下的基础矩阵模型（fundamental matrtix），然后使用启发式的方法决定具体使用哪个模型的结果来初始化。<br>初始化步骤如下：</p>
-<pre><code>1. 分别在当前帧和参考帧中找二者的correspondence
-2. 并行计算两个模型：
-    $$X_c=H_cr*x_r$$
-</code></pre><p>   X^T_c<em>F_cr</em>x_r=0<br>前者使用归一化的DLT（直接线性法）计算单应性矩阵（Hcr），后者使用经典的八点法计算基础矩阵（Fcr），在每一步的迭代计算时，为每个模型计算score：</p>
-<p>$$$$</p>
-<p>$$S_M=\sum((\rho_M(d^2_cr(x^i_c,x^i_r,M))+\rho_M(d^2_rc(x^i_c,x^i_r,M)))))$$</p>
-<p>$$x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}$$</p>
-<p>我暂时将博客的内容分为以下几类：调与研、架与构、读与记</p>
-<ul>
-<li>调与研：在调研新知识和新模块的问题和解决问题过程的积累，积累的过程对于理解问题以及之后再次回想时有很大帮助</li>
-<li>架与构：完整知识体系的总结，方便记忆，遇到知识关联时有助于快速回想</li>
-<li>读与记：读书后的思考、感想、记录</li>
-</ul>
-<h3 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h3><p>初尝试写博客，平时说话时并不觉得无话可说，可是真正提笔写时才发现囊中羞涩，所以在更新这一块暂时不给自己设要求，有时间就不定期更新，内容质量不限。</p>
-<p>$$S_M=\sum(\rho^M)$$</p>
+<ol>
+<li>分别在当前帧和参考帧中找二者的correspondence</li>
+<li>并行计算两个模型：<pre><code>$X_c=H_cr*x_r$   $X^T_c*F_cr*x_r=0$
+</code></pre>前者使用归一化的DLT（直接线性法）计算单应性矩阵（Hcr），后者使用经典的八点法计算基础矩阵（Fcr），在每一步的迭代计算时，为每个模型计算score：<br>$$S<em>M=\sum</em>{i=1}^{n}{X_i}(\rho_M(d^2_cr(x^i_c,x^i_r,M))+\rho_M(d^2_rc(x^i_c,x^i_r,M)))))$$</li>
+</ol>
+<p>$$f(x)=\left{<br>\begin{aligned}<br>\gamma-d^2   &amp;&amp; if d^2 &lt; T_M \<br>0    &amp;&amp; if d^2 &gt; T_M\<br>\end{aligned}<br>\right.$$<br>其中，Sm分别代表SH或者SF，d2crdcr2和d2rcdrc2表示对称的转换误差，分别是从当前帧到参考帧的变换误差和参考帧到当前帧的变换误差。这里：<br>        $$T_H=5.99$$    ,  $$TF=3.84  ,  $$\tau=T_H$$</p>
+<ol>
+<li>模型选择</li>
+</ol>
+<p>在平面运动和非平面运动两种情况下应选择相应的模型，这里使用一种鲁棒的方法来权衡：<br>        $$R_H=\frac{S_H}{S_H+S_F}$$<br>当$R_H$ &gt; 0.45就单应性矩阵模型，反之选择基础矩阵模型</p>
+<ol>
+<li><p>运动与结构恢复<br>利用单应性矩阵或基础矩阵计算地图点（map points</p>
+</li>
+<li><p>BA<br>最终使用BA进行优化</p>
+</li>
+</ol>
 
       
     </div>
@@ -577,7 +578,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序言"><span class="nav-number">1.</span> <span class="nav-text">序言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#贡献点"><span class="nav-number">2.</span> <span class="nav-text">贡献点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法"><span class="nav-number">3.</span> <span class="nav-text">方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自动化地图初始化"><span class="nav-number">3.1.</span> <span class="nav-text">自动化地图初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更新"><span class="nav-number">3.2.</span> <span class="nav-text">更新</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序言"><span class="nav-number">1.</span> <span class="nav-text">序言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#贡献点"><span class="nav-number">2.</span> <span class="nav-text">贡献点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法"><span class="nav-number">3.</span> <span class="nav-text">方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自动化地图初始化"><span class="nav-number">3.1.</span> <span class="nav-text">自动化地图初始化</span></a></li></ol></li></ol></div>
             
 
           </div>
