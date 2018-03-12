@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://yoursite.com/2018/03/11/ORB-SLAM论文记/index.html">
 <meta property="og:site_name" content="h&#39;s blog">
 <meta property="og:description" content="ORB-SLAM论文概要">
-<meta property="og:updated_time" content="2018-03-12T02:14:30.377Z">
+<meta property="og:updated_time" content="2018-03-12T02:18:02.960Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ORB-SLAM论文记">
 <meta name="twitter:description" content="ORB-SLAM论文概要">
@@ -375,11 +375,16 @@
 - “适者生存”的关键帧和地图点筛选机制；
 </code></pre><h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><h3 id="自动化地图初始化"><a href="#自动化地图初始化" class="headerlink" title="自动化地图初始化"></a>自动化地图初始化</h3><p>由于单目的固有局限，不能直接根据图像获取深度，所以在单目SLAM在开始前都需进行地图初始化，初始化的目的是使用计算最初的几帧以计算初始的地图点。为了更好的鲁棒性，这里同时使用过两个独立的几何模型同时初始化：基于平面场景的单应性矩阵模型（homography matrix）和基于非平面场景下的基础矩阵模型（fundamental matrtix），然后使用启发式的方法决定具体使用哪个模型的结果来初始化。<br>初始化步骤如下：</p>
 <ol>
-<li>分别在当前帧和参考帧中找二者的correspondence</li>
-<li>并行计算两个模型：<br>$$X_c=H_cr<em>x_r$$<br>$$X^T_c</em>F_cr*x_r=0$$<br>前者使用归一化的DLT（直接线性法）计算单应性矩阵（$H_cr$），后者使用经典的八点法计算基础矩阵（$F_cr$），在每一步的迭代计算时，为每个模型计算score：<br>$$S<em>M=\sum</em>{i=1}^{n}{X_i}(\rho_M(d^2_cr(x^i_c,x^i_r,M))+\rho_M(d^2_rc(x^i_c,x^i_r,M)))))$$<br>$$f(x)=\left{<br>\gamma-d^2   &amp;&amp; if d^2 &lt; T_M \<br>0    &amp;&amp; if d^2 &gt; T_M\<br>\right.$$</li>
-<li>模型选择:<br>在平面运动和非平面运动两种情况下应选择相应的模型，这里使用一种鲁棒的方法来权衡：<br>$$R_H=\frac{S_H}{S_H+S_F}$$<br>当$R_H$ &gt; 0.45就单应性矩阵模型，反之选择基础矩阵模型</li>
-<li>运动与结构恢复<br>利用单应性矩阵或基础矩阵计算地图点（map points</li>
-<li>BA<br>最终使用BA进行优化</li>
+<li><p>分别在当前帧和参考帧中找二者的correspondence</p>
+</li>
+<li><p>并行计算两个模型：<br>$$X_c=H_cr<em>x_r$$<br>$$X^T_c</em>F_cr*x_r=0$$<br>前者使用归一化的DLT（直接线性法）计算单应性矩阵（$H_cr$），后者使用经典的八点法计算基础矩阵（$F_cr$），在每一步的迭代计算时，为每个模型计算score：<br>$$S<em>M=\sum</em>{i=1}^{n}{X_i}(\rho_M(d^2_cr(x^i_c,x^i_r,M))+\rho_M(d^2_rc(x^i_c,x^i_r,M)))))$$</p>
+</li>
+<li><p>模型选择:<br>在平面运动和非平面运动两种情况下应选择相应的模型，这里使用一种鲁棒的方法来权衡：<br>$$R_H=\frac{S_H}{S_H+S_F}$$<br>当$R_H$ &gt; 0.45就单应性矩阵模型，反之选择基础矩阵模型</p>
+</li>
+<li><p>运动与结构恢复<br>利用单应性矩阵或基础矩阵计算地图点（map points</p>
+</li>
+<li><p>BA<br>最终使用BA进行优化</p>
+</li>
 </ol>
 
       
