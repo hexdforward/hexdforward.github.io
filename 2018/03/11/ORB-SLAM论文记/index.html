@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://yoursite.com/2018/03/11/ORB-SLAM论文记/index.html">
 <meta property="og:site_name" content="h&#39;s blog">
 <meta property="og:description" content="ORB-SLAM论文概要">
-<meta property="og:updated_time" content="2018-03-12T02:41:12.720Z">
+<meta property="og:updated_time" content="2018-03-12T02:43:45.752Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ORB-SLAM论文记">
 <meta name="twitter:description" content="ORB-SLAM论文概要">
@@ -361,25 +361,27 @@
 <li>第一个使用非线性优化方法而非传统的滤波器方法作为后端的方案，引入了关键帧；</li>
 </ul>
 <p>PTAM虽然是2007年提出的方案，但是功能缺非常完善，包括关键帧选取，特征匹配，云点三角化，相机定位、重定位。然而，PTAM也存在这样的缺陷：</p>
-<pre><code>- 只适用于小场景；
-- 追踪容易丢失；
-- 没有闭环检测；
-- 需要手动进行建图初始化
+<pre><code>    - 只适用于小场景；
+    - 追踪容易丢失；
+    - 没有闭环检测；
+    - 需要手动进行建图初始化
 </code></pre><p><a href="http://webdiis.unizar.es/~raulmur/orbslam/" title="ORB-SLAM" target="_blank" rel="external">ORB-SLAM</a>为PTAM的延续，在继承PTAM的并行处理定位与建图的基础上为鲁棒性、适用性继续增砖添瓦。</p>
 <h2 id="贡献点"><a href="#贡献点" class="headerlink" title="贡献点"></a>贡献点</h2><p>ORB-SLAM的主要贡献点如下：</p>
-<pre><code>- 使用单独线程处理追踪、建图、重定位、闭环检测，并且贯穿整个系统始终，只是用一种特征：ORB特征；
-- 使用covisiblity graph，使得追踪和建图都集中在本地共视区域，使得系统可以应用于大规模场景；
-- 基于位姿图（Essential Graph）优化是实时闭环检测；
-- 相机实时重定位，使得系统可以适用于较大的视角变化以及光照变化，同时允许系统在追踪失败时进行快速重定位；
-- 自动化系统初始化（attack PTAM）；
-- “适者生存”的关键帧和地图点筛选机制；
+<pre><code>    - 使用单独线程处理追踪、建图、重定位、闭环检测，并且贯穿整个系统始终，只是用一种特征：ORB特征；
+    - 使用covisiblity graph，使得追踪和建图都集中在本地共视区域，使得系统可以应用于大规模场景；
+    - 基于位姿图（Essential Graph）优化是实时闭环检测；
+    - 相机实时重定位，使得系统可以适用于较大的视角变化以及光照变化，同时允许系统在追踪失败时进行快速重定位；
+    - 自动化系统初始化（attack PTAM）；
+    - “适者生存”的关键帧和地图点筛选机制；
 </code></pre><h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><h3 id="自动化地图初始化"><a href="#自动化地图初始化" class="headerlink" title="自动化地图初始化"></a>自动化地图初始化</h3><p>由于单目的固有局限，不能直接根据图像获取深度，所以在单目SLAM在开始前都需进行地图初始化，初始化的目的是使用计算最初的几帧以计算初始的地图点。为了更好的鲁棒性，这里同时使用过两个独立的几何模型同时初始化：基于平面场景的单应性矩阵模型（homography matrix）和基于非平面场景下的基础矩阵模型（fundamental matrtix），然后使用启发式的方法决定具体使用哪个模型的结果来初始化。<br>初始化步骤如下：</p>
 <ol>
 <li><p>分别在当前帧和参考帧中找二者的correspondence</p>
 </li>
-<li><p>并行计算两个模型：<br> $$X_c=H_cr x_r$$<br> $$X^T_c F_cr x_r=0$$<br>前者使用归一化的DLT（直接线性法）计算单应性矩阵（$H_cr$），后者使用经典的八点法计算基础矩阵（$F_cr$），在每一步的迭代计算时，为每个模型计算score：<br> $$S_M=\sum_{i=1}^{n}{X_i}(\rho_M(d^2_cr(x^i_c,x^i_r,M))+\rho_M(d^2_rc(x^i_c,x^i_r,M)))))$$</p>
-</li>
-<li><p>模型选择:<br>在平面运动和非平面运动两种情况下应选择相应的模型，这里使用一种鲁棒的方法来权衡：<br> $$R_H=\frac{S_H}{S_H+S_F}$$<br> $$S_M=\sum_{i=1}^{n}{X_i}(\rho_M(d^2_cr(x^i_c,x^i_r,M))+\rho_M(d^2_rc(x^i_c,x^i_r,M)))))$$<br>当$R_H$ &gt; 0.45就单应性矩阵模型，反之选择基础矩阵模型</p>
+<li><p>并行计算两个模型：</p>
+<script type="math/tex; mode=display">X_c=H_cr x_r</script><script type="math/tex; mode=display">X^T_c F_cr x_r=0</script><p>前者使用归一化的DLT（直接线性法）计算单应性矩阵（$H_cr$），后者使用经典的八点法计算基础矩阵（$F_cr$），在每一步的迭代计算时，为每个模型计算score：</p>
+<script type="math/tex; mode=display">S_M=\sum_{i=1}^{n}{X_i}(\rho_M(d^2_cr(x^i_c,x^i_r,M))+\rho_M(d^2_rc(x^i_c,x^i_r,M)))))</script></li>
+<li><p>模型选择:<br>在平面运动和非平面运动两种情况下应选择相应的模型，这里使用一种鲁棒的方法来权衡：</p>
+<script type="math/tex; mode=display">R_H=\frac{S_H}{S_H+S_F}</script><p>当$R_H$ &gt; 0.45就单应性矩阵模型，反之选择基础矩阵模型</p>
 </li>
 <li><p>运动与结构恢复<br>利用单应性矩阵或基础矩阵计算地图点（map points)</p>
 </li>
